@@ -3,7 +3,6 @@ import 'package:kids_qa_bot/aws_service.dart';
 import 'package:kids_qa_bot/pallete.dart';
 import 'package:kids_qa_bot/settings.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
-
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -27,6 +26,7 @@ class _QAScreenState extends State<QAScreen> {
   final OpenAIService openAIService = OpenAIService();
   final AWSService awsService = AWSService();
   Language selectedLanguage = Language.english;
+  String _inputLocale = 'en-US';
 
   @override
   void initState() {
@@ -36,8 +36,8 @@ class _QAScreenState extends State<QAScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _stt.stop();
+    super.dispose();
   }
 
   Future<void> initSTT() async {
@@ -49,7 +49,7 @@ class _QAScreenState extends State<QAScreen> {
     setState(() {
       _isListening = true;
     });
-    await _stt.listen(onResult: onSpeechResult);
+    await _stt.listen(onResult: onSpeechResult, localeId: _inputLocale);
   }
 
   Future<void> stopListening() async {
@@ -66,6 +66,7 @@ class _QAScreenState extends State<QAScreen> {
     setState(() {
       _isListening = false;
     });
+    print(_question);
     print("start generating answer from chatGPT");
     final result = await openAIService.chatGPTAPI(_question, selectedLanguage);
     print(result);
@@ -112,17 +113,22 @@ class _QAScreenState extends State<QAScreen> {
       ),
       drawer: Drawer(
         child: ListView(padding: EdgeInsets.zero, children: <Widget>[
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text('Select a Language'),
-          ),
+          DrawerHeader(
+              decoration:
+                  const BoxDecoration(color: Pallete.firstSuggestionBoxColor),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 30),
+                child: const Text(
+                  'Pick your language:',
+                  style: TextStyle(fontSize: 25, fontFamily: 'Cera Pro'),
+                ),
+              )),
           ListTile(
             title: const Text('English'),
             onTap: () {
               setState(() {
                 selectedLanguage = Language.english;
+                _inputLocale = 'en-US';
               });
               Navigator.pop(context);
             },
@@ -132,6 +138,7 @@ class _QAScreenState extends State<QAScreen> {
             onTap: () {
               setState(() {
                 selectedLanguage = Language.chinese;
+                _inputLocale = 'zh-CN';
               });
               Navigator.pop(context);
             },
