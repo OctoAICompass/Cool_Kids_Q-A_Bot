@@ -1,10 +1,12 @@
+import 'package:just_audio/just_audio.dart';
+import 'package:kids_qa_bot/aws_service.dart';
 import 'package:kids_qa_bot/pallete.dart';
+import 'package:kids_qa_bot/settings.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:flutter_tts/flutter_tts.dart' as tts;
 import 'package:logging/logging.dart';
 
 import 'openai_service.dart';
@@ -18,12 +20,13 @@ class QAScreen extends StatefulWidget {
 
 class _QAScreenState extends State<QAScreen> {
   final stt.SpeechToText _stt = stt.SpeechToText();
-  bool _isListening = false;
   String _question = 'Octonauts, what is your question?';
   String _answer = "Waiting for OctoAI bot's response";
-  final tts.FlutterTts _tts = tts.FlutterTts();
   final Logger logger = Logger('MyLogger');
+  bool _isListening = false;
   final OpenAIService openAIService = OpenAIService();
+  final AWSService awsService = AWSService();
+  Language selectedLanguage = Language.english;
 
   @override
   void initState() {
@@ -43,18 +46,14 @@ class _QAScreenState extends State<QAScreen> {
   }
 
   Future<void> startListening() async {
-    await _stt.listen(onResult: onSpeechResult);
     setState(() {
-      _answer = "Waiting for OctoAI bot's response";
       _isListening = true;
     });
+    await _stt.listen(onResult: onSpeechResult);
   }
 
   Future<void> stopListening() async {
     await _stt.stop();
-    setState(() {
-      _isListening = false;
-    });
   }
 
   void onSpeechResult(SpeechRecognitionResult result) {
@@ -64,20 +63,29 @@ class _QAScreenState extends State<QAScreen> {
   }
 
   Future<void> generateResponseVoice() async {
-    final result = await openAIService.chatGPTAPI(_question);
-    setState(() => _answer = result);
+    setState(() {
+      _isListening = false;
+    });
+    print("start generating answer from chatGPT");
+    final result = await openAIService.chatGPTAPI(_question, selectedLanguage);
+    print(result);
+    setState(() {
+      _answer = result;
+    });
 
-    await _tts.setLanguage('en-US');
-    await _tts.setPitch(1.0);
-    await _tts.setSpeechRate(0.5);
-    await _tts.speak(result);
+    print("start TTS");
+    final audioUrl = await awsService.getTTSAudio(result, selectedLanguage);
+    final player = AudioPlayer();
+    await player.setUrl(audioUrl);
+    player.play();
+    await _stt.stop();
   }
 
   void micButtonPressed() async {
-    if (await _stt.hasPermission && _stt.isNotListening) {
+    if (await _stt.hasPermission && !_isListening) {
       await startListening();
-    } else if (_stt.isListening) {
-      await stopListening();
+    } else if (_isListening) {
+      // await stopListening();
       await generateResponseVoice();
     } else {
       await initSTT();
@@ -89,8 +97,46 @@ class _QAScreenState extends State<QAScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fun Kids Q&A Bot'),
-        leading: const Icon(Icons.menu),
+        // leading: const Icon(Icons.menu),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
         centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: ListView(padding: EdgeInsets.zero, children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text('Select a Language'),
+          ),
+          ListTile(
+            title: const Text('English'),
+            onTap: () {
+              setState(() {
+                selectedLanguage = Language.english;
+              });
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('中文'),
+            onTap: () {
+              setState(() {
+                selectedLanguage = Language.chinese;
+              });
+              Navigator.pop(context);
+            },
+          )
+        ]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: AvatarGlow(
@@ -125,10 +171,11 @@ class _QAScreenState extends State<QAScreen> {
                 Container(
                   height: 123,
                   decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images/virtualAssistant.png'))),
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/inkling.png'),
+                    ),
+                  ),
                 )
               ],
             ),

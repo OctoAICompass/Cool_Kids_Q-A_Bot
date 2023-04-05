@@ -1,32 +1,86 @@
 PODS:
+  - audio_session (0.0.1):
+    - Flutter
+  - aws_polly (0.0.1):
+    - AWSMobileClient
+    - AWSPolly
+    - Flutter
+  - AWSAuthCore (2.30.4):
+    - AWSCore (= 2.30.4)
+  - AWSCognitoIdentityProvider (2.30.4):
+    - AWSCognitoIdentityProviderASF (= 2.30.4)
+    - AWSCore (= 2.30.4)
+  - AWSCognitoIdentityProviderASF (2.30.4):
+    - AWSCore (= 2.30.4)
+  - AWSCore (2.30.4)
+  - AWSMobileClient (2.30.4):
+    - AWSAuthCore (= 2.30.4)
+    - AWSCognitoIdentityProvider (= 2.30.4)
+    - AWSCognitoIdentityProviderASF (= 2.30.4)
+    - AWSCore (= 2.30.4)
+  - AWSPolly (2.30.4):
+    - AWSCore (= 2.30.4)
   - Flutter (1.0.0)
   - flutter_tts (0.0.1):
     - Flutter
+  - just_audio (0.0.1):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - speech_to_text (0.0.1):
     - Flutter
     - Try
   - Try (2.1.1)
 
 DEPENDENCIES:
+  - audio_session (from `.symlinks/plugins/audio_session/ios`)
+  - aws_polly (from `.symlinks/plugins/aws_polly/ios`)
   - Flutter (from `Flutter`)
   - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
+  - just_audio (from `.symlinks/plugins/just_audio/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/ios`)
 
 SPEC REPOS:
   trunk:
+    - AWSAuthCore
+    - AWSCognitoIdentityProvider
+    - AWSCognitoIdentityProviderASF
+    - AWSCore
+    - AWSMobileClient
+    - AWSPolly
     - Try
 
 EXTERNAL SOURCES:
+  audio_session:
+    :path: ".symlinks/plugins/audio_session/ios"
+  aws_polly:
+    :path: ".symlinks/plugins/aws_polly/ios"
   Flutter:
     :path: Flutter
   flutter_tts:
     :path: ".symlinks/plugins/flutter_tts/ios"
+  just_audio:
+    :path: ".symlinks/plugins/just_audio/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/ios"
   speech_to_text:
     :path: ".symlinks/plugins/speech_to_text/ios"
 
 SPEC CHECKSUMS:
+  audio_session: 4f3e461722055d21515cf3261b64c973c062f345
+  aws_polly: 9f95d0e3ee34be8f2f3df76ef39865d561f1a636
+  AWSAuthCore: 42e2d4927d94e5e323b63b2ae885f287c51b5889
+  AWSCognitoIdentityProvider: 2331f5f4c8c1775c6a228bb2dae2d353198401e8
+  AWSCognitoIdentityProviderASF: d905c2acab3d2e7016b643d53ba553d5217fa929
+  AWSCore: 19b8233fe2d0ed3ccf5cff833a615814282cdc90
+  AWSMobileClient: 7d9c81e47ef27c6b5604858477006548eb1db342
+  AWSPolly: 740a9ca000c360728685ff176459ba8aafc66470
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
+  just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
+  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   speech_to_text: b43a7d99aef037bd758ed8e45d79bbac035d2dfe
   Try: 5ef669ae832617b3cee58cb2c6f99fb767a4ff96
 
